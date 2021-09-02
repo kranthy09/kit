@@ -36,3 +36,4 @@ class Item(models.Model):
 class ItemBrand(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    is_available = models.BooleanField(default=None)
