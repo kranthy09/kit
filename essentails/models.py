@@ -52,8 +52,8 @@ class Form(models.Model):
         default="description_form",
         null=True
     )
+    is_available = models.BooleanField(default=None)
 
 class FormItem(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    is_available = models.BooleanField(default=None)
