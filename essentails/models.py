@@ -3,9 +3,6 @@ from django.db.models.base import Model
 
 # Create your models here.
 
-<<<<<<< HEAD
-#TODO : Write the model for Form
-=======
 class Brand(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(
@@ -40,4 +37,3 @@ class ItemBrand(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=None)
->>>>>>> 5d0091c46a2d05227e0a973bb9578e8c65dd9777
