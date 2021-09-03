@@ -6,11 +6,10 @@ from django.db.models.base import Model
 class Brand(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(
-        default="description",
+        default="description_brand",
         null=True
     )
-    quantity = models.IntegerField(default=0)
-    price = models.DecimalField(default=0, decimal_places=3, max_digits=9)
+    is_available = models.BooleanField(default=None)
 
 
 class Item(models.Model):
@@ -31,9 +30,30 @@ class Item(models.Model):
         through='ItemBrand',
         through_fields=('item', 'brand')
     )
+    is_available = models.BooleanField(default=None)
 
 
 class ItemBrand(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+    price = models.DecimalField(
+        default=0,
+        decimal_places=3,
+        max_digits=9
+    )
+    
+
+
+class Form(models.Model):
+    name = models.CharField(max_length=200)
+    status = models.BooleanField(default=None)
+    updates = models.TextField(
+        default="description_form",
+        null=True
+    )
+
+class FormItem(models.Model):
+    form = models.ForeignKey(Form, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=None)
