@@ -17,7 +17,7 @@ class Form(models.Model):
         default=None,
         max_length=20
     )
-    updates = models.TextField(
+    description = models.TextField(
         default="description_form",
         null=True
     )
@@ -32,18 +32,8 @@ class Brand(models.Model):
     is_available = models.BooleanField(default=None)
 
 class Item(models.Model):
-    ITEM_CATEGORIES = [
-        ('SNACKS', 'Snacks'),
-        ('BISCUITS', 'Biscuits'),
-        ('CHOCOLATES', 'Chocolates'),
-        ('HEALTH', 'Health')
-    ]
     name = models.CharField(max_length=200)
-    category = models.CharField(
-        choices=ITEM_CATEGORIES,
-        default='Snacks',
-        max_length=20
-    )
+    category = models.CharField(max_length=20)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=None)
@@ -53,3 +43,9 @@ class Item(models.Model):
         decimal_places=3,
         max_digits=9
     )
+
+class User(models.Model):
+    name = models.CharField(max_length=200)
+    form_updates = models.TextField(max_length=400)
+    delivered_quantity = models.IntegerField(default=0)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, default=False)

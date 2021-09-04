@@ -1,2 +1,11 @@
 # TODO
 - populate database for Item, Brand, Form
+
+fruits_form
+    brands
+    items for each brand
+
+snacks_form
+accomidation_form
+cloths_form
+
