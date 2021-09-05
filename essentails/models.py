@@ -44,6 +44,7 @@ class Item(models.Model):
         max_digits=9
     )
 
+
 class User(models.Model):
     name = models.CharField(max_length=200)
     form_updates = models.TextField(max_length=400)
