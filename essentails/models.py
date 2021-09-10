@@ -1,71 +1,103 @@
+from typing import ClassVar
 from django.db import models
 from django.db.models.base import Model
 from django.db.models.deletion import CASCADE
 from django.db.models.enums import Choices
 from django.db.models.fields import NullBooleanField
 from django.db.models.fields.related import ForeignKey
+from datetime import datetime, timedelta
+
 
 # Create your models here.
 
-class Form(models.Model):
-    FORM_STATUS = [
-        ('LIVE', 'Live'),
-        ('CLOSED', 'Closed'),
-        ('DONE', 'Done')
-    ]
-    form_name = models.CharField(max_length=200)
-    form_status = models.CharField(
-        choices=FORM_STATUS,
-        default=None,
-        max_length=20
-    )
-    form_description = models.TextField(
-        default="description_form",
-        null=True
-    )
-
-
-class Item(models.Model):
-    form = models.ForeignKey(Form, related_name='items', on_delete=models.CASCADE)
-    item_category = models.CharField(max_length=100, default="CATEGORY")
-    item_name = models.CharField(max_length=200)
-
-
-class Brand(models.Model):
-    item = models.ForeignKey(Item, related_name='brands', on_delete=models.CASCADE)
-    brand_name = models.CharField(max_length=200)
-    brand_description = models.TextField(
-        default="description_brand",
-        null=True
-    )
-    brand_is_available = models.BooleanField(default=None, blank=True)
-
-
 class User(models.Model):
-    user_name = models.CharField(max_length=200)
-    items = models.ManyToManyField(
-        Item,
-        through='UserItem',
-        through_fields=['user', 'item']
+    user_name = models.CharField(max_length=100)
+
+class Form(models.Model):
+
+    LIVE = 'LIVE'
+    CLOSED = 'CLOSED'
+    DONE = 'DONE'
+    FORM_STATUS = (
+        (LIVE, 'Live'),
+        (CLOSED, 'Closed'),
+        (DONE, 'Done')
     )
 
+    form_name = models.CharField(max_length=20)
+    form_status = models.CharField(
+        max_length=9,
+        choices=FORM_STATUS,
+        default='INACTIVE'
+    )
+    form_instructions = models.CharField(
+        max_length=200,
+        default="instructions"
+    )
+    available_till = models.DateTimeField(
+        default=datetime.now() + timedelta(days=30)
+    )
 
 class UserForm(models.Model):
-    user = models.ForeignKey(User, related_name="user_forms", on_delete=models.CASCADE)
-    form = models.ForeignKey(Form, related_name='form_users', on_delete=models.CASCADE)
-    updates = models.TextField(max_length=400)
+    user = models.ForeignKey(
+        User,
+        related_name='users',
+        on_delete=models.CASCADE
+    )
+    form = models.ForeignKey(
+        Form,
+        related_name='forms',
+        on_delete=models.CASCADE
+    )
+    user_form_updates = models.CharField(max_length=50)
 
-class UserItem(models.Model):
-    user = models.ForeignKey(User, related_name='user_items', on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, related_name='item_user', on_delete=models.CASCADE)
-    brand = models.OneToOneField(Brand, related_name='brand', on_delete=models.CASCADE)
+class Brand(models.Model):
+    brand_name = models.CharField(max_length=20)
+
+class Item(models.Model):
+    item_name = models.CharField(max_length=20)
+    item_description = models.CharField(
+        max_length=200,
+        default="item_description"
+        )
+    brands = models.ManyToManyField(
+        Brand,
+        through="ItemBrand",
+        through_fields=['item', 'brand']
+    )
+    item_category = models.CharField(max_length=9, default="CATEGORY")
+
+class ItemBrand(models.Model):
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE
+    )
+    brand = models.ForeignKey(
+        Brand,
+        on_delete=models.CASCADE
+    )
+    quantity_available = models.IntegerField()
+    price = models.DecimalField(
+        max_digits=9,
+        decimal_places=3,
+    )
+
+class ProductList(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    form = models.ForeignKey(
+        Form,
+        on_delete=models.CASCADE
+    )
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE
+    )
+    brand = models.ForeignKey(
+        Brand,
+        on_delete=models.CASCADE
+    )
     quantity_ordered = models.IntegerField(default=0)
     quantity_delivered = models.IntegerField(default=0)
-    quantity_available = models.IntegerField(blank=True, null=True)
-    price_per_item = models.DecimalField(
-                default=0,
-                decimal_places=3,
-                max_digits=9
-            )
-
-
